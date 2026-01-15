@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 9: Wild Cursive (雲門舞集：狂草)</title>
+    
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 引入 Babel 用來解析 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 頁面樣式設定 -->
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ---------------------------------------------------------
+        // Icons
+        // ---------------------------------------------------------
+        const BookOpen = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        );
+        const PenTool = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-7z"/><path d="m2 2 7.5 7.5"/><path d="m2 2 7 7"/></svg>
+        );
+        const CheckCircle = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        );
+        const RotateCcw = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/><path d="M3 3v9h9"/></svg>
+        );
+        const Award = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        );
+        const AlertCircle = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        );
+
+        // ---------------------------------------------------------
+        // Main Application Component
+        // ---------------------------------------------------------
+        const Unit9Review = () => {
+          const [activeTab, setActiveTab] = useState('text');
+
+          // ==========================================
+          // Data: Text Analysis (Content from PDF)
+          // ==========================================
+          const textSections = [
+            {
+              title: "Paragraph 1: The Opening",
+              content: "The calming sound of ocean waves began to fill the theater, creating a peaceful atmosphere. The show was about to begin. As the graceful dancers entered the stage, they twirled, whirled, and curled their bodies. They moved together in perfect harmony, like notes in a melody. Then, suddenly, the dancers began to do unexpected turns and moves, making surprising rhythms. Their movements were like Chinese calligraphy strokes. Each one was traced in digital ink above the stage. Wild Cursive was brought to life by Lin Hwai-min, the artistic director of Cloud Gate Dance Theatre. The idea that dance can be a combination of Chinese calligraphy and precise, artistic movements makes a powerful impression on the audience.",
+              highlights: [
+                { text: "creating", note: "考點 1：分詞構句。原句為 ..., which created a peaceful atmosphere。" },
+                { text: "about to", note: "考點 2：be about to + V (將要/快要...)。" },
+                { text: "making", note: "考點 5：分詞構句。原句為 ..., which made surprising rhythms。" },
+                { text: "brought to life", note: "考點 8：被動語態 (was brought...)。片語 bring sth to life (賦予...生命/使鮮活)。" },
+                { text: "the artistic director", note: "考點 8：同位語，補充說明前面的 Lin Hwai-min。" },
+                { text: "that", note: "考點 9 (句型)：引導名詞子句作同位語，解釋前面的 The idea。注意此處 that 不可省略。" }
+              ]
+            },
+            {
+              title: "Paragraph 2: A Unique Blend",
+              content: "Having had the privilege of attending a performance of Wild Cursive, I witnessed Lin's impressive blend of dance and art. In a world with so many dance shows, Lin's ability to combine traditional Chinese art with modern Western dance elements sets his shows apart. They are both visually beautiful and thought-provoking. While each piece of the trilogy reflects Lin's personal style, each dance was unique. Sometimes, the dancers' movements looked like those of a calligrapher using a brush, emphasizing the beauty and flow of calligraphy. This was achieved by contrasting dark brushstrokes against a white backdrop. At other times, the dancers' graceful movements reminded me of ballet, and the performance they created was fascinating.",
+              highlights: [
+                { text: "Having had", note: "考點 10 (句型)：完成式分詞構句。原句為 Because I had had...，表示「已經」有過這個榮幸(發生在 witnessed 之前)。" },
+                { text: "combine", note: "考點 11：combine A with B (結合 A 與 B)。" },
+                { text: "thought-provoking", note: "考點 12：複合形容詞 (N + V-ing)，令人深思的/發人省思的。" },
+                { text: "those", note: "考點 14：指示代名詞，代替前面的複數名詞 movements。" },
+                { text: "using", note: "考點 14：分詞片語修飾 calligrapher (who used...)。" },
+                { text: "by", note: "考點 15：by + V-ing (藉由...)。" },
+                { text: "reminded", note: "考點 16：remind A of B (使 A 想起 B)。" }
+              ]
+            },
+            {
+              title: "Paragraph 3: Harmony and Variation",
+              content: "I couldn't help but notice how the movements of each dancer helped to tell the story Lin intended to create. Just as strokes in calligraphy join within a nine-square grid to form a character, the dancers' movements blended smoothly within the space onstage to create a harmonious whole. As the show progressed, the dancers' movements became more varied. At times, they moved together, mirroring one another. At other times, they separated to perform different movements, creating beautiful lines and shapes. Like the elegant strokes made by a calligraphy master, the dancers flowed across the stage. This raised the quality of the already impressive performance to even higher peaks of artistic brilliance.",
+              highlights: [
+                { text: "couldn't help but", note: "考點 17：can't help but + V (忍不住/不禁...)。" },
+                { text: "intended to", note: "考點 17：省略關代的形容詞子句 (that) Lin intended to create，修飾 story。" },
+                { text: "Just as", note: "考點 18：Just as... (正如同/就像...)。" },
+                { text: "mirroring", note: "考點 20：分詞構句 (附帶狀況)，..., and they mirrored one another。" },
+                { text: "one another", note: "考點 20：三者以上的互相/彼此。" },
+                { text: "made by", note: "考點 21：過去分詞片語修飾 strokes (which were made by...)。" }
+              ]
+            },
+            {
+              title: "Paragraph 4: Conclusion",
+              content: "Lin's hard work in blending traditional and modern styles from both the East and West has truly paid off. It has earned him international recognition and many awards. His East-meets-West dance, which beautifully demonstrates the concept of \"writing\" with the body and \"dancing\" with the hands, never fails to fascinate audiences. With his exceptional artistic vision, Lin Hwai-min always goes the extra mile to create unique visual experiences that not only reflect the uniqueness of Taiwanese culture but also integrate different traditions and artistic forms.",
+              highlights: [
+                { text: "paid off", note: "考點 22：pay off (獲得回報/成功)。" },
+                { text: "earned", note: "考點 23：earn sb sth (為某人贏得...)。" },
+                { text: "which", note: "考點 23：非限定關係代名詞，補充說明前面的 East-meets-West dance。" },
+                { text: "never fails to", note: "考點 23：never fail to + V (總是能/一定會...)。" },
+                { text: "not only", note: "考點 24：not only... but also... (不只...而且...)，連接兩個動詞 reflect 和 integrate。" }
+              ]
+            }
+          ];
+
+          // ==========================================
+          // Data: Cloze Test (Based on Grammar Points)
+          // ==========================================
+          const clozePassage = {
+            text: [
+              "The show 'Wild Cursive' combines dance and calligraphy. The performance began with the sound of waves, ", // 0
+              " a peaceful atmosphere. Dancers moved like notes in a melody. Suddenly, they made unexpected moves, ", // 1
+              " surprising rhythms. The idea ", // 2 (Modified to be appositive)
+              " dance can be a combination of calligraphy and artistic movements makes a powerful impression. ", // 3 (Modified)
+              " the privilege of seeing the show, I was impressed. Lin Hwai-min has the ability to ", // 4
+              " traditional art ", // 5
+              " modern dance. Sometimes the movements looked like ", // 6
+              " of a calligrapher. At other times, they ", // 7
+              " me ", // 8
+              " ballet. Lin's hard work has finally ", // 9
+              " . The show ", // 10
+              " reflects Taiwanese culture but also integrates different traditions." // 11
+            ],
+            blanks: [
+              { 
+                id: 1, 
+                options: ["create", "created", "creating", "creates"], 
+                answer: "creating", 
+                hint: "分詞構句：主動創造了氣氛 (which created...)。",
+                explanation: "省略連接詞與主詞，主動動詞改為 V-ing。"
+              },
+              { 
+                id: 2, 
+                options: ["make", "making", "made", "makes"], 
+                answer: "making", 
+                hint: "分詞構句：造成了驚喜的節奏。",
+                explanation: "同樣為分詞構句，表示前面動作帶來的結果。"
+              },
+              { 
+                id: 3, 
+                options: ["which", "what", "that", "where"], 
+                answer: "that", 
+                hint: "引導同位語子句，解釋前面的 The idea。",
+                explanation: "The idea that... (that引導名詞子句作同位語)。注意此處子句結構完整，故不可用 which。"
+              },
+              { 
+                id: 4, 
+                options: ["Have", "Had", "Having had", "To have"], 
+                answer: "Having had", 
+                hint: "完成式分詞構句：因為「已經」有過這個榮幸。",
+                explanation: "動作發生在主要子句之前，用 Having + p.p.。"
+              },
+              { 
+                id: 5, 
+                options: ["combine", "combines", "combined", "combining"], 
+                answer: "combine", 
+                hint: "ability to + V (做某事的能力)。",
+                explanation: "to 雖然是不定詞，但 ability to V 為固定搭配。"
+              },
+              { 
+                id: 6, 
+                options: ["to", "with", "for", "on"], 
+                answer: "with", 
+                hint: "combine A ___ B (結合 A 與 B)。",
+                explanation: "combine A with B。"
+              },
+              { 
+                id: 7, 
+                options: ["this", "that", "these", "those"], 
+                answer: "those", 
+                hint: "代替前面複數名詞 movements。",
+                explanation: "比較對象為複數時，使用 those 代替。"
+              },
+              { 
+                id: 8, 
+                options: ["reminded", "remembered", "recalled", "remained"], 
+                answer: "reminded", 
+                hint: "使我想起... (remind A of B)。",
+                explanation: "remind sb of sth。"
+              },
+              { 
+                id: 9, 
+                options: ["of", "about", "for", "with"], 
+                answer: "of", 
+                hint: "remind A ___ B。",
+                explanation: "remind A of B (使A想起B)。"
+              },
+              { 
+                id: 10, 
+                options: ["paid off", "paid for", "paid out", "paid back"], 
+                answer: "paid off", 
+                hint: "片語：獲得回報、成功。",
+                explanation: "pay off (成功、有回報)。"
+              },
+              { 
+                id: 11, 
+                options: ["not only", "as well as", "both", "neither"], 
+                answer: "not only", 
+                hint: "搭配後面的 but also。",
+                explanation: "not only... but also...。"
+              }
+            ]
+          };
+
+          // ==========================================
+          // Logic & Render
+          // ==========================================
+          const handleSelect = (blankIndex, option, setAnswers) => {
+            setAnswers(prev => ({ ...prev, [blankIndex]: option }));
+          };
+
+          return (
+            <div className="min-h-screen bg-stone-50 font-sans text-stone-800">
+              {/* Header - Calligraphy theme colors */}
+              <header className="bg-stone-800 text-white p-4 shadow-lg sticky top-0 z-10 border-b-4 border-red-700">
+                <div className="max-w-4xl mx-auto flex justify-between items-center">
+                  <div>
+                    <h1 className="text-xl md:text-2xl font-bold tracking-wider">Unit 9: Wild Cursive</h1>
+                    <p className="text-stone-300 text-sm">雲門舞集「狂草」：課文與考點複習</p>
+                  </div>
+                  <div className="hidden md:block text-xs font-bold bg-red-800 py-1 px-3 rounded text-white tracking-widest uppercase shadow-sm">
+                    Interactive
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-4xl mx-auto p-4 pb-20">
+                
+                {/* Navigation Tabs (Removed Sentence Scramble) */}
+                <div className="flex flex-wrap gap-2 mb-6 bg-stone-200 p-1 rounded-lg w-fit shadow-inner">
+                  <NavButton active={activeTab === 'text'} onClick={() => setActiveTab('text')} icon={<BookOpen size={18} />} label="課文考點解析" />
+                  <NavButton active={activeTab === 'quiz'} onClick={() => setActiveTab('quiz')} icon={<PenTool size={18} />} label="綜合克漏字測驗" />
+                </div>
+
+                {/* Tab Content */}
+                {activeTab === 'text' && <TextReview sections={textSections} />}
+                {activeTab === 'quiz' && <ClozePassageQuiz passage={clozePassage} onSelectAnswer={handleSelect} />}
+              
+              </main>
+            </div>
+          );
+        };
+
+        // ==========================================
+        // Sub-Components
+        // ==========================================
+
+        const NavButton = ({ active, onClick, icon, label }) => (
+          <button
+            onClick={onClick}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all font-medium text-sm ${
+              active 
+                ? 'bg-white text-stone-800 shadow-sm border-l-4 border-red-600' 
+                : 'text-stone-500 hover:text-stone-700 hover:bg-stone-300/50'
+            }`}
+          >
+            {icon}
+            <span>{label}</span>
+          </button>
+        );
+
+        const TextReview = ({ sections }) => {
+          const [selectedNote, setSelectedNote] = useState(null);
+
+          return (
+            <div className="space-y-6 fade-in">
+              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200 mb-4 flex items-start space-x-3">
+                <div className="bg-orange-100 p-2 rounded-full text-orange-700 mt-1 shrink-0">
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-orange-900">學習指引</h3>
+                  <p className="text-orange-800 text-sm">
+                    點擊課文中 <span className="bg-yellow-200 px-1 rounded border-b-2 border-yellow-400 font-semibold text-yellow-900">畫底線的重點</span> 
+                    以查看詳細的文法與句型解析。
+                  </p>
+                </div>
+              </div>
+
+              {sections.map((section, idx) => (
+                <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                  <h2 className="text-lg font-bold text-stone-700 mb-3 border-b border-stone-100 pb-2 flex items-center">
+                     <span className="bg-stone-200 text-stone-600 text-xs px-2 py-1 rounded mr-2">Para {idx + 1}</span>
+                     {section.title}
+                  </h2>
+                  <p className="leading-8 text-lg text-stone-700 text-justify font-serif">
+                    {renderHighlightedText(section.content, section.highlights, setSelectedNote)}
+                  </p>
+                </div>
+              ))}
+
+              {/* Note Modal */}
+              {selectedNote && (
+                <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-lg px-4">
+                  <div className="bg-stone-800 text-white p-5 rounded-xl shadow-2xl slide-up border border-stone-600">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-yellow-400 font-bold text-xl font-mono border-b border-stone-600 pb-1">{selectedNote.text}</span>
+                      <button onClick={() => setSelectedNote(null)} className="text-stone-400 hover:text-white bg-stone-700 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
+                    </div>
+                    <p className="text-stone-200 text-lg leading-relaxed font-light">
+                      {selectedNote.note}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        const renderHighlightedText = (content, highlights, onSelect) => {
+          if (!highlights || highlights.length === 0) return content;
+          const patternString = highlights.map(h => h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+          const regex = new RegExp(`(${patternString})`, 'g');
+
+          return content.split(regex).map((part, index) => {
+            const highlight = highlights.find(h => h.text === part);
+            if (highlight) {
+              return (
+                <span 
+                  key={index}
+                  onClick={() => onSelect(highlight)}
+                  className="bg-yellow-100 border-b-2 border-yellow-400 text-stone-900 px-1 mx-0.5 rounded cursor-pointer hover:bg-yellow-300 transition-colors font-medium select-none"
+                >
+                  {part}
+                </span>
+              );
+            }
+            return part;
+          });
+        };
+
+        const ClozePassageQuiz = ({ passage, onSelectAnswer }) => {
+          const [answers, setAnswers] = useState({});
+          const [showResult, setShowResult] = useState(false);
+          const [activeBlank, setActiveBlank] = useState(null);
+
+          const handleOptionClick = (blankId, option) => {
+            setAnswers(prev => ({ ...prev, [blankId]: option }));
+            setActiveBlank(null);
+          };
+
+          const calculateScore = () => {
+            let correct = 0;
+            passage.blanks.forEach(b => {
+              if (answers[b.id] === b.answer) correct++;
+            });
+            return correct;
+          };
+
+          const resetQuiz = () => {
+            setAnswers({});
+            setShowResult(false);
+            setActiveBlank(null);
+          };
+
+          const renderParagraph = () => {
+            const elements = [];
+            passage.text.forEach((segment, index) => {
+              elements.push(<span key={`text-${index}`} className="leading-9">{segment}</span>);
+              
+              const blank = passage.blanks.find(b => b.id === index + 1);
+              
+              if (blank) {
+                const isAnswered = answers[blank.id];
+                const isCorrect = showResult && answers[blank.id] === blank.answer;
+                const isWrong = showResult && answers[blank.id] !== blank.answer;
+                
+                let buttonClass = "inline-flex items-center justify-center min-w-[80px] h-9 mx-1 px-3 border-b-2 text-base font-bold transition-all cursor-pointer align-middle rounded-t-md ";
+                
+                if (showResult) {
+                  if (isCorrect) buttonClass += "border-green-500 bg-green-100 text-green-800";
+                  else if (isWrong) buttonClass += "border-red-500 bg-red-100 text-red-800 line-through decoration-2";
+                  else buttonClass += "border-red-300 bg-red-50 text-red-400";
+                } else {
+                  if (activeBlank === blank.id) buttonClass += "border-stone-500 bg-stone-100 text-stone-700 ring-2 ring-stone-400";
+                  else if (isAnswered) buttonClass += "border-stone-600 text-stone-800 bg-stone-200/50";
+                  else buttonClass += "border-stone-300 bg-white text-stone-500 hover:bg-stone-50";
+                }
+
+                elements.push(
+                  <span key={`blank-${blank.id}`} className="relative inline-block my-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!showResult) setActiveBlank(activeBlank === blank.id ? null : blank.id);
+                      }}
+                      className={buttonClass}
+                    >
+                      {isAnswered ? answers[blank.id] : `${blank.id}`}
+                      {showResult && isCorrect && <CheckCircle size={14} className="ml-1 inline" />}
+                    </button>
+                    
+                    {!showResult && activeBlank === blank.id && (
+                      <div className="absolute left-0 bottom-full mb-2 w-56 bg-white rounded-lg shadow-xl border border-stone-200 z-20 overflow-hidden flex flex-col slide-up">
+                        <div className="bg-stone-700 px-3 py-2 text-xs font-bold text-white uppercase tracking-wider flex justify-between items-center">
+                          <span>Question {blank.id}</span>
+                          <span onClick={(e) => {e.stopPropagation(); setActiveBlank(null);}} className="cursor-pointer hover:text-stone-300">✕</span>
+                        </div>
+                        {blank.options.map(opt => (
+                          <button
+                            key={opt}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOptionClick(blank.id, opt);
+                            }}
+                            className="text-left px-4 py-3 hover:bg-stone-100 text-stone-700 text-sm font-medium border-b border-stone-50 last:border-0 transition-colors"
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {showResult && isWrong && (
+                      <div className="absolute left-0 -top-8 bg-stone-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-10 font-bold fade-in">
+                        Ans: {blank.answer}
+                      </div>
+                    )}
+                  </span>
+                );
+              }
+            });
+            return elements;
+          };
+
+          return (
+            <div className="max-w-3xl mx-auto" onClick={() => setActiveBlank(null)}>
+              <div className="bg-white p-4 md:p-8 rounded-xl shadow-lg border border-stone-200 fade-in">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 border-b pb-4 gap-4">
+                  <h2 className="text-xl font-bold text-stone-800 flex items-center">
+                    <PenTool className="mr-2 text-stone-600" size={24} />
+                    Cloze Test: Grammar Review
+                  </h2>
+                  {showResult && (
+                    <div className="flex items-center space-x-2 bg-stone-100 px-4 py-2 rounded-full self-start md:self-auto border border-stone-300">
+                      <Award className="text-stone-600" size={20} />
+                      <span className="font-bold text-stone-800">
+                        Score: {calculateScore()} / {passage.blanks.length}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {!showResult && (
+                  <div className="bg-blue-50 text-blue-800 text-sm p-3 rounded-lg mb-4 flex items-center border border-blue-100">
+                    <AlertCircle size={16} className="mr-2 shrink-0" />
+                    點擊空格選擇正確的答案。
+                  </div>
+                )}
+
+                <div className="prose prose-lg text-stone-700 max-w-none mb-8 bg-stone-50 p-6 rounded-lg border border-stone-200 leading-loose shadow-inner font-serif">
+                  <p>{renderParagraph()}</p>
+                </div>
+
+                {!showResult && activeBlank && (
+                  <div className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6 slide-up rounded-r-lg">
+                    <p className="text-sm text-orange-900 font-medium flex items-center">
+                      <span className="font-bold bg-orange-200 px-2 py-0.5 rounded text-xs mr-2 uppercase tracking-wide">Hint</span>
+                      {passage.blanks.find(b => b.id === activeBlank)?.hint}
+                    </p>
+                  </div>
+                )}
+
+                {showResult && (
+                   <div className="bg-white border border-stone-200 rounded-xl overflow-hidden mb-6 shadow-sm">
+                     <div className="bg-stone-100 px-4 py-3 border-b border-stone-200 font-bold text-stone-700">
+                       解析與檢討
+                     </div>
+                     <div className="divide-y divide-stone-100">
+                       {passage.blanks.map(b => {
+                         const isCorrect = answers[b.id] === b.answer;
+                         return (
+                           <div key={b.id} className={`p-4 flex gap-3 ${!isCorrect ? 'bg-red-50/30' : ''}`}>
+                             <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                               {b.id}
+                             </div>
+                             <div>
+                               <div className="flex items-center gap-2 mb-1">
+                                 <span className="font-bold text-stone-800">{b.answer}</span>
+                                 {!isCorrect && <span className="text-xs text-red-500 line-through">{answers[b.id] || "未作答"}</span>}
+                               </div>
+                               <p className="text-sm text-stone-600">{b.explanation}</p>
+                             </div>
+                           </div>
+                         );
+                       })}
+                     </div>
+                   </div>
+                )}
+
+                <div className="flex justify-center pt-2">
+                  {!showResult ? (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowResult(true); }}
+                      className="px-8 py-3 bg-stone-700 hover:bg-stone-800 text-white rounded-lg font-bold shadow-lg transition-all hover:-translate-y-0.5 w-full md:w-auto"
+                    >
+                      Submit Answers
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); resetQuiz(); }}
+                      className="flex items-center px-6 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-full font-medium transition-colors shadow-md"
+                    >
+                      <RotateCcw size={16} className="mr-2" />
+                      Try Again
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Unit9Review />);
+    </script>
+</body>
+</html>
